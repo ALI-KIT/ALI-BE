@@ -5,7 +5,9 @@ var categoryController = require('../controllers/categoryController')
 /* GET home page. */
 router.get('/category', function(req, res, next) {
     const data = categoryController.get
-  res.send(data)
+    res.send(data)
 });
+
+router.use('/post', require('../controllers/postController'))
 
 module.exports = router;
