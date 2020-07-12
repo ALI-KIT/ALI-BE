@@ -2,65 +2,63 @@ let express = require('express');
 let router = express.Router();
 let NewsService = require('../services/NewsService')
 let PlaceService = require('../services/PlaceService')
-let mongoose = require('mongoose')
+let mongoose = require('mongoose');
+const unidecode = require('unidecode');
 
-router.get('/', (res, req, next) => {
-    NewsService.getAll((err, data) => {
-        if (err) {
-            console.log(err)
-            req.status(500).send({ error: err })
+router.get('/', async (res, req, next) => {
+    const place = unidecode(res.query.location).trim().toLowerCase() || "all"
+    let result = {error:"¯\_(ツ)_/¯"};
+    try {
+        switch (place) {
+            case "quan 9":
+                const id = mongoose.Types.ObjectId('5f0ae0263a55493258285092');
+                const place = await PlaceService.get(id)
+                const { regex, flat } = place
+                pattern = RegExp(regex, flat)
+                result = await NewsService.findAll({
+                    $or: [
+                        { "Title": { $regex: pattern } },
+                        { "Summary": { $regex: pattern } },
+                        { "Content": { $regex: pattern } },
+                        { "Category": { $regex: pattern } }
+                    ]
+                })
+
+                break;
+            default:
+                result = await NewsService.getAll()
+                break;
+
         }
-        req.status(200).json(data)
-    })
+        req.status(200).json(result);
+    } catch (error) {
+        console.log(error);
+        req.status(500).send(error)
+    }
 })
 
-router.get('/quan9', (res, req, next) => {
-    NewsService.getAll((err, data) => {
-        if (err) {
-            console.log(err)
-            req.status(500).send({ error: err })
-        }
+router.get('/quan9', async (res, req, next) => {
+    try {
+        const { news, place } = await Promise.all(NewsService.getAll(), PlaceService.get(id))
         const id = mongoose.Types.ObjectId('5f0ae0263a55493258285092');
-        PlaceService.get(id, (err, d2) => {
-            if (err) {
-                console.log(err)
-                req.status(500).send({ error: err })
-            }
-            // console.log(data);
-            console.log(d2);
-            const { regex, flat } = d2
-            var result = data.filter(e => IsCorrectCondition(e, RegExp(regex, flat)))
-            req.status(200).json(result)
-        })
-    })
+        const { regex, flat } = place
+        var result = news.filter(e => IsCorrectCondition(e, RegExp(regex, flat)))
+        req.status(200).json(result)
+    } catch (error) {
+        req.status(500).send(error)
+    }
 })
 
-router.get('/regex', (res, req, next) => {
+router.get('/regex', async (res, req, next) => {
     const id = mongoose.Types.ObjectId('5f0ae0263a55493258285092');
-    PlaceService.get(id, (err, data) => {
-        if (err) {
-            console.log(err)
-            req.status(500).send({ error: err })
-        }
-        req.status(200).json(data)
-    })
+    try {
+        const data = await PlaceService.get(id)
+        req.status(200).json(data);
+    } catch (error) {
+        console.log(error);
+        req.status(500).send(error)
+    }
 })
-// const regex = RegExp("\b(qu[ậa]n 9)\b",iu)
-
-// const strings={
-//     a: "aa quận 0 is live ",
-//     b: "is love",
-//     c: "is a God"
-// }
-
-// let rs=false
-// for (const i in strings) {
-//     if(regex.test(i))
-//     {
-//         rs=true;
-//         break
-//     }
-// }
 
 const IsCorrectCondition = (obj, regex) => {
     for (const e in obj) {
