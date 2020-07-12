@@ -1,8 +1,9 @@
 require('lodash');
 const axios = require("axios");
 const cheerio = require("cheerio");
-const Post = require("./models/post")
-require('./Mongodb')
+const News = require("./models/news");
+const { Mongoose } = require('mongoose');
+// require('./Mongodb')
 const root_site = "https://baomoi.com"
 
 const sendResponse = res => async request => {
@@ -70,11 +71,19 @@ const getContentPage = async url => {
 
 const run = async () => {
     var data = await scrawl('https://baomoi.com' + '/tin-moi/trang1.epi')
-    Post.insertMany(data).then(res => {
+    News.insertMany(data).then(res => {
         console.log(res.length);
+        mongoose.connection.close()
     }).catch(err => {
         console.log(err);
+        mongoose.connection.close()
     })
 }
 
 // run()
+// Mongoose.connection.open()
+
+module.exports={
+    fetchHtmlFromUrl,
+    sendResponse
+}

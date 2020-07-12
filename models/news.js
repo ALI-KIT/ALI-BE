@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
 
-var PostSchema = new Schema({
+var NewsSchema = new Schema({
     Title: String,
     Dated: {
         type: Date,
@@ -21,6 +21,6 @@ var PostSchema = new Schema({
 });
 
 // Biên dịch mô hình từ schema
-var PostModel = mongoose.model('Post', PostSchema);
+var NewsModel = mongoose.model('news', NewsSchema);
 
-module.exports = PostModel
+module.exports = NewsModel

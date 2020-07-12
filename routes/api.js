@@ -8,6 +8,6 @@ router.get('/category', function(req, res, next) {
     res.send(data)
 });
 
-router.use('/post', require('../controllers/postController'))
+router.use('/news', require('../controllers/newsController'))
 
 module.exports = router;
