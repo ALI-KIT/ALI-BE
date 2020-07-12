@@ -17,12 +17,12 @@ router.get('/', async (res, req, next) => {
             if (place != null) {
                 const { regex, flat } = place
                 pattern = RegExp(regex, flat)
-                result = await NewsService.findAll({
+                result = await NewsService.findAllWithProjection({
                     $or: [
-                        { "Title": { $regex: pattern } },
-                        { "Summary": { $regex: pattern } },
-                        { "Content": { $regex: pattern } },
-                        { "Category": { $regex: pattern } }
+                        { "title": { $regex: pattern } },
+                        { "summary": { $regex: pattern } },
+                        { "content": { $regex: pattern } },
+                        { "category": { $regex: pattern } }
                     ]
                 })
             }
@@ -34,10 +34,22 @@ router.get('/', async (res, req, next) => {
     }
 })
 
+router.get('/content/:id', async (res, req, next) => {
+    const id = unidecode(res.params.id).trim().toLowerCase() || "null"
+    try {
+        const oId = mongoose.Types.ObjectId(id);
+        const data = await NewsService.get(oId) || { error: "¯\_(ツ)_/¯" };
+        req.status(200).json(data)
+    } catch (error) {
+        req.status(500).send({error: "¯\_(ツ)_/¯"})
+    }
+
+})
+
 router.get('/quan9', async (res, req, next) => {
     try {
-        const { news, place } = await Promise.all(NewsService.getAll(), PlaceService.get(id))
         const id = mongoose.Types.ObjectId('5f0ae0263a55493258285092');
+        const { news, place } = await Promise.all(NewsService.findAllWithProjection({}), PlaceService.get(id))
         const { regex, flat } = place
         var result = news.filter(e => IsCorrectCondition(e, RegExp(regex, flat)))
         req.status(200).json(result)

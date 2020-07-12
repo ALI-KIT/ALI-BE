@@ -3,7 +3,7 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const News = require("./models/news");
 const { Mongoose } = require('mongoose');
-// require('./Mongodb')
+require('./Mongodb')
 const root_site = "https://baomoi.com"
 
 const sendResponse = res => async request => {
@@ -37,7 +37,7 @@ const fetchHtmlFromUrl = async url => {
 const scrawl = async url => {
     const $ = await fetchHtmlFromUrl(url);
     const sites = [];
-    $('div.timeline div.story a.cache').each((i, e) => {
+    $('div.timeline div.story:not(.story--video,.story--photo,.wait-render) a.cache').each((i, e) => {
         sites.push(root_site + $(e).attr('href'));
     });
     const result = await Promise.all(sites.map(async site => await getContentPage(site)))
@@ -47,25 +47,26 @@ const scrawl = async url => {
 const getContentPage = async url => {
     const $ = await fetchHtmlFromUrl(url);
 
-    const Title = $('h1.article__header').text()
-    const Dated = new Date($('div.article__meta time').attr('datetime'))
-    const Category = $('div.breadcrumb a.cate').text()
-    const Summary = $('div.article__sapo').text()
-    const Content = $('div.article__body').html()
-    const Auth = $('p.body-author').text()
-    const Site = root_site
-    const Url = url
-    const Source = $('p.bm-source a').attr('href');
+    title = $('h1.article__header').text()
+    dated = new Date($('div.article__meta time').attr('datetime'))
+    category = $('div.breadcrumb a.cate').first().text()
+    summary = $('div.article__sapo').text()
+    content = $('div.article__body').html()
+    auth = $('p.body-author').text()
+    site = root_site
+    source = $('p.bm-source a').attr('href');
+    thumbnail= $('div.article p.body-image img').first().attr('src')
     return {
-        Title,
-        Dated,
-        Category,
-        Summary,
-        Content,
-        Auth,
-        Site,
-        Url,
-        Source
+        title,
+        dated,
+        category,
+        summary,
+        content,
+        auth,
+        site,
+        url,
+        source,
+        thumbnail
     }
 }
 
@@ -73,14 +74,12 @@ const run = async () => {
     var data = await scrawl('https://baomoi.com' + '/tin-moi/trang1.epi')
     News.insertMany(data).then(res => {
         console.log(res.length);
-        mongoose.connection.close()
     }).catch(err => {
         console.log(err);
-        mongoose.connection.close()
     })
 }
 
-// run()
+run()
 // Mongoose.connection.open()
 
 module.exports={

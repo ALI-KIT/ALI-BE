@@ -6,6 +6,7 @@ module.exports = {
     getAll: () => News.find({}),
     findAll: (condition) => News.find(condition),
     findOne: (condition) => News.findOne(condition),
+    findAllWithProjection: (condition) => News.find(condition).select("title summary author thumbnail"),
     update: (id, data) => {
 
     },

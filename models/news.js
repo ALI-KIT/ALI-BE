@@ -3,21 +3,22 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var NewsSchema = new Schema({
-    Title: String,
-    Dated: {
+    title: String,
+    dated: {
         type: Date,
         default: Date.now()
     },
-    Category: String,
-    Summary: String,
-    Content: String,
-    Auth: {
+    category: String,
+    summary: String,
+    content: String,
+    auth: {
         type: String,
         default: "Nguyễn Minh Trường"
     },
-    Site: String,
-    Url: String,
-    Source: String,
+    site: String,
+    url: String,
+    source: String,
+    thumbnail: String
 });
 
 // Biên dịch mô hình từ schema
