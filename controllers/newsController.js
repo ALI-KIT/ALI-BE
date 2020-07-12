@@ -27,7 +27,7 @@ router.get('/quan9', (res, req, next) => {
                 req.status(500).send({ error: err })
             }
             // console.log(data);
-            // console.log(d2);
+            console.log(d2);
             const { regex, flat } = d2
             var result = data.filter(e => IsCorrectCondition(e, RegExp(regex, flat)))
             req.status(200).json(result)
@@ -64,7 +64,7 @@ router.get('/regex', (res, req, next) => {
 
 const IsCorrectCondition = (obj, regex) => {
     for (const e in obj) {
-        if (regex.test(e)) {
+        if (regex.test([obj[e]])) {
             return true;
         }
     }
