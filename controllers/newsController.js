@@ -6,13 +6,15 @@ let mongoose = require('mongoose');
 const unidecode = require('unidecode');
 
 router.get('/', async (res, req, next) => {
-    const place = unidecode(res.query.location).trim().toLowerCase() || "all"
-    let result = {error:"¯\_(ツ)_/¯"};
+    const location = unidecode(res.query.location).trim().toLowerCase() || "all"
+    let result = { error: "¯\_(ツ)_/¯" };
     try {
-        switch (place) {
-            case "quan 9":
-                const id = mongoose.Types.ObjectId('5f0ae0263a55493258285092');
-                const place = await PlaceService.get(id)
+        if (location == "all") {
+            result = await NewsService.getAll()
+        } else {
+            // const id = mongoose.Types.ObjectId('5f0ae0263a55493258285092');
+            const place = await PlaceService.findOne({ "name": location })
+            if (place != null) {
                 const { regex, flat } = place
                 pattern = RegExp(regex, flat)
                 result = await NewsService.findAll({
@@ -23,12 +25,7 @@ router.get('/', async (res, req, next) => {
                         { "Category": { $regex: pattern } }
                     ]
                 })
-
-                break;
-            default:
-                result = await NewsService.getAll()
-                break;
-
+            }
         }
         req.status(200).json(result);
     } catch (error) {
