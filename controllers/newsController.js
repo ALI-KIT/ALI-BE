@@ -8,7 +8,7 @@ const unidecode = require('unidecode');
 router.get('/', async (res, req, next) => {
     const { page, per_page, location } = res.query
     const loc = unidecode(location || "all").trim().toLowerCase()
-    const limit = Number(per_page || 5)
+    const limit = Number(per_page || 21)
     const skip = limit * ((page > 1) ? (page - 1) : 0)
     try {
         if (loc == "all") {
