@@ -6,28 +6,37 @@ let mongoose = require('mongoose');
 const unidecode = require('unidecode');
 
 router.get('/', async (res, req, next) => {
-    const location = unidecode(res.query.location).trim().toLowerCase() || "all"
-    let result = { error: "¯\_(ツ)_/¯" };
+    const { page, per_page, location } = res.query
+    const loc = unidecode(location || "all").trim().toLowerCase()
+    const limit = Number(per_page || 21)
+    const skip = limit * ((page > 1) ? (page - 1) : 0)
     try {
-        if (location == "all") {
-            result = await NewsService.getAll()
+        if (loc == "all") {
+            const [data, header] = await Promise.all([NewsService.getAll(limit, skip), NewsService.getMaxNewsAndMaxPage(limit)])
+            req.status(200).header(header).json(data);
         } else {
+
             // const id = mongoose.Types.ObjectId('5f0ae0263a55493258285092');
-            const place = await PlaceService.findOne({ "name": location })
+            const place = await PlaceService.findOne({ "name": loc })
             if (place != null) {
                 const { regex, flat } = place
-                pattern = RegExp(regex, flat)
-                result = await NewsService.findAllWithProjection({
+                const pattern = RegExp(regex, flat)
+                const condition = {
                     $or: [
                         { "title": { $regex: pattern } },
                         { "summary": { $regex: pattern } },
                         { "content": { $regex: pattern } },
                         { "category": { $regex: pattern } }
                     ]
-                })
+                }
+                const [data, header] = await Promise.all([NewsService.findAllWithCondition(condition, limit, skip), NewsService.getMaxNewsAndMaxPageWithCondition(condition, limit)])
+                req.status(200).header(header).json(data);
+            }
+            else {
+                let result = { error: "¯\_(ツ)_/¯" };
+                req.status(500).send(result)
             }
         }
-        req.status(200).json(result);
     } catch (error) {
         console.log(error);
         req.status(500).send(error)
@@ -41,7 +50,7 @@ router.get('/content/:id', async (res, req, next) => {
         const data = await NewsService.get(oId) || { error: "¯\_(ツ)_/¯" };
         req.status(200).json(data)
     } catch (error) {
-        req.status(500).send({error: "¯\_(ツ)_/¯"})
+        req.status(500).send({ error: "¯\_(ツ)_/¯" })
     }
 
 })
@@ -49,7 +58,7 @@ router.get('/content/:id', async (res, req, next) => {
 router.get('/quan9', async (res, req, next) => {
     try {
         const id = mongoose.Types.ObjectId('5f0ae0263a55493258285092');
-        const { news, place } = await Promise.all(NewsService.findAllWithProjection({}), PlaceService.get(id))
+        const { news, place } = await Promise.all(NewsService.findAllWithCondition({}), PlaceService.get(id))
         const { regex, flat } = place
         var result = news.filter(e => IsCorrectCondition(e, RegExp(regex, flat)))
         req.status(200).json(result)
