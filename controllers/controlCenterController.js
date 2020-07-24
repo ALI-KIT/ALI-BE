@@ -1,7 +1,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const { loadWebSite } = require("../utils/crawlUtils");
-const NewsModel = require("../models/news");
+const News2Service = require("../services/News2Service");
 
 
 exports.pretty = async (req, res, next) => {
@@ -35,6 +35,8 @@ exports.beginCrawl = async (req, res, next) => {
     
         const contents = await Promise.all(sites.map(async detailUrl => await getContentInBaoMoiDetailPage(detailUrl)))
         
+        
+        News2Service.insert
         NewsModel.insertMany(contents).then(res => {
             console.log(res.length);
         }).catch(err => {
