@@ -41,29 +41,9 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-<<<<<<< HEAD
 app.use('/user', usersRouter);
-
-// app.use(function(req, res, next) {
-//   if (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'JWT') {
-//     jsonwebtoken.verify(req.headers.authorization.split(' ')[1], 'RESTFULAPIs', function(err, decode) {
-//       if (err) req.user = undefined;
-//       req.user = decode;
-//       next();
-//     });
-//   } else {
-//     req.user = undefined;
-//     next();
-//   }
-// });
-
 app.use('/api',  passport.authenticate('jwt', { session: false }), require('./routes/api'));
-=======
-app.use('/users', usersRouter);
-app.use('/api', apiRouter);
 app.use('/control-center', controlCenterRouter)
->>>>>>> 8938ef80a0d3d68eac645153a4ad9ed7564d5abe
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
