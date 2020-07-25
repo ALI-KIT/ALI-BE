@@ -7,6 +7,8 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var apiRouter = require('./routes/api');
+var controlCenterRouter = require('./routes/control-center')
 
 var passport = require('passport')
 const bodyParser = require('body-parser');
@@ -39,6 +41,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+<<<<<<< HEAD
 app.use('/user', usersRouter);
 
 // app.use(function(req, res, next) {
@@ -55,6 +58,11 @@ app.use('/user', usersRouter);
 // });
 
 app.use('/api',  passport.authenticate('jwt', { session: false }), require('./routes/api'));
+=======
+app.use('/users', usersRouter);
+app.use('/api', apiRouter);
+app.use('/control-center', controlCenterRouter)
+>>>>>>> 8938ef80a0d3d68eac645153a4ad9ed7564d5abe
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
