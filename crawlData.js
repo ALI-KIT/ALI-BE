@@ -3,7 +3,8 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const News = require("./models/news");
 const { Mongoose } = require('mongoose');
-require('./Mongodb')
+const unidecode = require('unidecode');
+// require('./Mongodb')
 const root_site = "https://baomoi.com"
 
 const sendResponse = res => async request => {
@@ -79,7 +80,36 @@ const run = async () => {
     })
 }
 
-run()
+// run()
+
+const runtest = () => {
+    var data = {title:"Q.9 is love",
+summary:"tang nhon phu a, quan 9 is my life",
+content:"dit me quan 9",
+url:"url",
+source:"source"}
+    const keywords=["Q.9", "Quận 9", "Tăng Nhơn Phú A"]
+    const flat ='ui'
+    const regexs= keywords.map(key=>({
+        keyword: key,
+        regex: RegExp(StringToRegex(key),flat)
+    }))
+    const tags= regexs.filter(r=>r.regex.test(data.summary)).map(r=>r.keyword)
+    // let text = data.summary
+    // let result = regex.exec(data.summary)
+    console.log(tags);
+
+
+}
+
+const StringToRegex=(str)=>{
+    const text=str.trim().toLowerCase()
+    const textAscii= unidecode(text)
+    return '\\b'+text.split("").reduce((pre, cur, i) => pre + (textAscii.includes(cur) ? cur : `[${textAscii[i]}${cur}]`))+'\\b'
+}
+
+runtest()
+
 // Mongoose.connection.open()
 
 module.exports={

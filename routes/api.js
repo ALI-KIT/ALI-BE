@@ -4,6 +4,7 @@ var categoryController = require('../controllers/categoryController')
 var localController = require('../controllers/localController');
 
 /* GET home page. */
+// router.use(TokenCheckMiddleware)
 router.get('/category', function(req, res, next) {
     const data = categoryController.get
     res.send(data)

@@ -5,15 +5,15 @@ let PlaceService = require('../services/PlaceService')
 let mongoose = require('mongoose');
 const unidecode = require('unidecode');
 
-router.get('/', async (res, req, next) => {
-    const { page, per_page, location } = res.query
+router.get('/', async (req, res, next) => {
+    const { page, per_page, location } = req.query
     const loc = unidecode(location || "all").trim().toLowerCase()
     const limit = Number(per_page || 21)
     const skip = limit * ((page > 1) ? (page - 1) : 0)
     try {
         if (loc == "all") {
             const [data, header] = await Promise.all([NewsService.getAll(limit, skip), NewsService.getMaxNewsAndMaxPage(limit)])
-            req.status(200).header(header).json(data);
+            res.status(200).header(header).json(data);
         } else {
 
             // const id = mongoose.Types.ObjectId('5f0ae0263a55493258285092');
@@ -30,51 +30,51 @@ router.get('/', async (res, req, next) => {
                     ]
                 }
                 const [data, header] = await Promise.all([NewsService.findAllWithCondition(condition, limit, skip), NewsService.getMaxNewsAndMaxPageWithCondition(condition, limit)])
-                req.status(200).header(header).json(data);
+                res.status(200).header(header).json(data);
             }
             else {
                 let result = { error: "¯\_(ツ)_/¯" };
-                req.status(500).send(result)
+                res.status(500).send(result)
             }
         }
     } catch (error) {
         console.log(error);
-        req.status(500).send(error)
+        res.status(500).send(error)
     }
 })
 
-router.get('/content/:id', async (res, req, next) => {
-    const id = unidecode(res.params.id).trim().toLowerCase() || "null"
+router.get('/content/:id', async (req, res, next) => {
+    const id = unidecode(req.params.id).trim().toLowerCase() || "null"
     try {
         const oId = mongoose.Types.ObjectId(id);
         const data = await NewsService.get(oId) || { error: "¯\_(ツ)_/¯" };
-        req.status(200).json(data)
+        res.status(200).json(data)
     } catch (error) {
-        req.status(500).send({ error: "¯\_(ツ)_/¯" })
+        res.status(500).send({ error: "¯\_(ツ)_/¯" })
     }
 
 })
 
-router.get('/quan9', async (res, req, next) => {
+router.get('/quan9', async (req, res, next) => {
     try {
         const id = mongoose.Types.ObjectId('5f0ae0263a55493258285092');
         const { news, place } = await Promise.all(NewsService.findAllWithCondition({}), PlaceService.get(id))
         const { regex, flat } = place
         var result = news.filter(e => IsCorrectCondition(e, RegExp(regex, flat)))
-        req.status(200).json(result)
+        res.status(200).json(result)
     } catch (error) {
-        req.status(500).send(error)
+        res.status(500).send(error)
     }
 })
 
-router.get('/regex', async (res, req, next) => {
+router.get('/regex', async (req, res, next) => {
     const id = mongoose.Types.ObjectId('5f0ae0263a55493258285092');
     try {
         const data = await PlaceService.get(id)
-        req.status(200).json(data);
+        res.status(200).json(data);
     } catch (error) {
         console.log(error);
-        req.status(500).send(error)
+        res.status(500).send(error)
     }
 })
 

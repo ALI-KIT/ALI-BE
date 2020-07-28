@@ -2,7 +2,7 @@
 var mongoose = require('mongoose');
 
 //Thiết lập một kết nối mongoose mặc định
-var mongoDB = 'mongodb+srv://user1:123455@ali-db.gyx2c.gcp.mongodb.net/ALI-DB?retryWrites=true&w=majority';
+var mongoDB = process.env.MONGODB_URI;
 mongoose.connect(mongoDB,{
     useUnifiedTopology: true,
     useNewUrlParser: true,
