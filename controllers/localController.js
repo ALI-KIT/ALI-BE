@@ -29,7 +29,7 @@ function sendResult(res, code, message, data) {
 }
 
 /* find all local childs from provided local parent code*/
-export.findChildsByCode = async (req, res, next) => {
+exports.findChildsByCode = async (req, res, next) => {
     const type = (req.query.type === 'tinh-thanh' || req.query.type ==='quan-huyen') ? req.query.type : undefined;
     const code = req.query.code
     
@@ -40,10 +40,7 @@ export.findChildsByCode = async (req, res, next) => {
     else if(type == 'tinh-thanh') 
     sendResult(200, '', await locals.districtsOfProvinceCode(code));
     else if( type == 'quan-huyen')
-    sendResult(200, await locals.)
+    sendResult(200, await locals.wardsOfDistrictCode(code))
 
-    if(message==='') try {
-        data = (type === 'tinh-thanh') ? await locals.districtsOfProvinceCode(code)
-    } catch
     
 }

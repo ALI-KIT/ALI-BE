@@ -2,6 +2,8 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const { loadWebSite } = require("../utils/crawlUtils");
 const News2Service = require("../services/News2Service");
+const CrawlerParent  = require("./core/crawler/CrawlerParent");
+const BaoMoiTinMoiCrawler  = require("./core/crawler/bao-moi/BaoMoiTinMoiCrawler");
 
 
 exports.pretty = async (req, res, next) => {
@@ -14,6 +16,19 @@ exports.home = async (req, res, next) => {
         res.status(200).json(result);
     } catch (error) {
         console.log(error);
+        res.status(500).send(error)
+    }
+}
+
+exports.beginCrawl2 = async (req, res, next) => {
+    const appCrawler = new CrawlerParent();
+    appCrawler.addChild(new BaoMoiTinMoiCrawler());
+    const result = await appCrawler.enqueue();
+    const x = 4;
+    try {
+        res.status(200).send("Success")
+    } catch (error) {
+        console.log(error)
         res.status(500).send(error)
     }
 }
@@ -35,8 +50,6 @@ exports.beginCrawl = async (req, res, next) => {
     
         const contents = await Promise.all(sites.map(async detailUrl => await getContentInBaoMoiDetailPage(detailUrl)))
         
-        
-        News2Service.insert
         NewsModel.insertMany(contents).then(res => {
             console.log(res.length);
         }).catch(err => {

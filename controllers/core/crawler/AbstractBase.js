@@ -1,4 +1,4 @@
-class AbstractBase {
+module.exports = class AbstractBase {
     constructor() {
         if (this.isAbstractClass())
             throw new Error(`Abstract class ${this.constructor.name} cannot be instantiated`);

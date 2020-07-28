@@ -1,4 +1,4 @@
-const News = requires('../models/news2')
+const News = require('../models/news2')
 
 exports.insert = async (news) => {
     const similars = await this.findSimilar(news);
@@ -39,7 +39,7 @@ exports.findById = async (id) => {
 
 }
 
-exports.find(condition) = async (id) => {
+exports.find = async (condition) => {
 
 }
 

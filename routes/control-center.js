@@ -11,5 +11,6 @@ router.get('/pretty', controlCenterController.pretty)
 router.get('/status', controlCenterController.home)
 
 router.get('/begin-crawl', controlCenterController.beginCrawl)
+router.get('/begin-crawl-2', controlCenterController.beginCrawl2)
 
 module.exports = router;
